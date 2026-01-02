@@ -61,6 +61,7 @@ class HomeViewModel(private val countryRepository: CountryRepository) : ViewMode
             try {
                 val countries = countryRepository.getAllCountries().map { domainCountry ->
                     CountryUi(
+                        cca3 = domainCountry.cca3,
                         name = domainCountry.name,
                         capital = domainCountry.capital.joinToString(", "),
                         region = domainCountry.region,

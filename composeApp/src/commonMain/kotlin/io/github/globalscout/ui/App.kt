@@ -13,18 +13,34 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import io.github.globalscout.ui.theme.AppTheme
 import kotlinx.serialization.Serializable
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.request.crossfade
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+
+import coil3.util.DebugLogger
 
 @Serializable
 object ListDestination
 
 @Serializable
-data class DetailDestination(val countryName: String)
+data class DetailDestination(val cca3: String)
 
 @Composable
 @Preview
 fun App() {
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .components {
+                add(KtorNetworkFetcherFactory())
+            }
+            .logger(DebugLogger())
+            .crossfade(true)
+            .build()
+    }
+
     val navController = rememberNavController()
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -44,7 +60,7 @@ fun App() {
                         searchQuery = searchQuery,
                         onSearchQueryChange = viewModel::onSearchQueryChange,
                         onCountryClick = { country ->
-                            navController.navigate(DetailDestination(countryName = country.name))
+                            navController.navigate(DetailDestination(cca3 = country.cca3))
                         },
                         modifier = Modifier.safeContentPadding()
                     )
@@ -57,7 +73,8 @@ fun App() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     CountryDetailScreen(
-                        countryName = detail.countryName,
+                        cca3 = detail.cca3,
+                        onBackClick = { navController.popBackStack() },
                         modifier = Modifier.safeContentPadding()
                     )
                 }

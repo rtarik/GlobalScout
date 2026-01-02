@@ -2,6 +2,7 @@ package io.github.globalscout.ui
 
 import io.github.globalscout.data.CountryRepository
 import io.github.globalscout.domain.Country
+import io.github.globalscout.domain.CountryDetail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -43,8 +44,8 @@ class HomeViewModelTest {
     fun `fetch countries success`() = runTest(testDispatcher) {
         // Given
         val countries = listOf(
-            Country("Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
-            Country("France", listOf("Paris"), "Europe", "🇫🇷")
+            Country("EGY", "Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
+            Country("FRA", "France", listOf("Paris"), "Europe", "🇫🇷")
         )
         repository.countries = countries
         viewModel = HomeViewModel(repository)
@@ -63,8 +64,8 @@ class HomeViewModelTest {
     fun `search filters countries by name`() = runTest(testDispatcher) {
         // Given
        val countries = listOf(
-            Country("Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
-            Country("France", listOf("Paris"), "Europe", "🇫🇷")
+            Country("EGY", "Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
+            Country("FRA", "France", listOf("Paris"), "Europe", "🇫🇷")
         )
         repository.countries = countries
         viewModel = HomeViewModel(repository)
@@ -85,8 +86,8 @@ class HomeViewModelTest {
     fun `search filters countries by capital`() = runTest(testDispatcher) {
         // Given
        val countries = listOf(
-            Country("Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
-            Country("France", listOf("Paris"), "Europe", "🇫🇷")
+            Country("EGY", "Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
+            Country("FRA", "France", listOf("Paris"), "Europe", "🇫🇷")
         )
         repository.countries = countries
         viewModel = HomeViewModel(repository)
@@ -107,8 +108,8 @@ class HomeViewModelTest {
     fun `search filters countries by region`() = runTest(testDispatcher) {
         // Given
        val countries = listOf(
-            Country("Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
-            Country("France", listOf("Paris"), "Europe", "🇫🇷")
+            Country("EGY", "Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
+            Country("FRA", "France", listOf("Paris"), "Europe", "🇫🇷")
         )
         repository.countries = countries
         viewModel = HomeViewModel(repository)
@@ -129,8 +130,8 @@ class HomeViewModelTest {
     fun `search with no results returns empty list`() = runTest(testDispatcher) {
         // Given
        val countries = listOf(
-            Country("Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
-            Country("France", listOf("Paris"), "Europe", "🇫🇷")
+            Country("EGY", "Egypt", listOf("Cairo"), "Africa", "🇪🇬"),
+            Country("FRA", "France", listOf("Paris"), "Europe", "🇫🇷")
         )
         repository.countries = countries
         viewModel = HomeViewModel(repository)
@@ -155,5 +156,9 @@ class FakeCountryRepository : CountryRepository {
     override suspend fun getAllCountries(): List<Country> {
         if (shouldFail) throw Exception(errorMsg)
         return countries
+    }
+
+    override suspend fun getCountry(cca3: String): CountryDetail? {
+        return null
     }
 }

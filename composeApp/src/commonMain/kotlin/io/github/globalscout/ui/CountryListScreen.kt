@@ -160,6 +160,7 @@ fun CountryCard(
 // Previews
 
 private val sampleCountry = CountryUi(
+    cca3 = "EGY",
     name = "Egypt",
     capital = "Cairo",
     region = "Africa",

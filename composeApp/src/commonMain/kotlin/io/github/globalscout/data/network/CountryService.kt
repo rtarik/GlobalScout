@@ -23,4 +23,8 @@ class CountryService {
     suspend fun fetchAll(): List<Country> {
         return client.get(ALL_COUNTRIES_URL).body<List<Country>>()
     }
+
+    suspend fun getCountry(cca3: String): List<CountryDetail> {
+        return client.get("https://restcountries.com/v3.1/alpha/$cca3").body()
+    }
 }

@@ -12,4 +12,14 @@ data class Country(
 )
 
 @Serializable
-data class CountryName(val common: String)
+data class CountryName(
+    val common: String,
+    val official: String,
+    val nativeName: Map<String, Translation>? = null
+)
+
+@Serializable
+data class Translation(
+    val common: String,
+    val official: String
+)

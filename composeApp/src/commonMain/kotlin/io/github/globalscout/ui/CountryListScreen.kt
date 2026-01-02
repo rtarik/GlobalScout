@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -23,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.globalscout.ui.model.CountryUi
 import io.github.globalscout.ui.theme.AppTheme
+import globalscout.composeapp.generated.resources.Res
+import globalscout.composeapp.generated.resources.ic_chevron_right
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -30,6 +34,7 @@ fun CountryListScreen(
     state: CountryUiState,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    onCountryClick: (CountryUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -65,7 +70,8 @@ fun CountryListScreen(
             }
             is CountryUiState.Success -> {
                 CountryList(
-                    countries = state.countries
+                    countries = state.countries,
+                    onCountryClick = onCountryClick
                 )
             }
         }
@@ -75,6 +81,7 @@ fun CountryListScreen(
 @Composable
 fun CountryList(
     countries: List<CountryUi>,
+    onCountryClick: (CountryUi) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -83,7 +90,10 @@ fun CountryList(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(countries) { country ->
-            CountryCard(country = country)
+            CountryCard(
+                country = country,
+                onClick = { onCountryClick(country) }
+            )
         }
     }
 }
@@ -91,46 +101,58 @@ fun CountryList(
 @Composable
 fun CountryCard(
     country: CountryUi,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
+        onClick = onClick,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = country.flag,
-                fontSize = 40.sp,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-            
-            Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = country.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = country.flag,
+                    fontSize = 40.sp,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
-                
-                if (country.capital.isNotEmpty()) {
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     Text(
-                        text = "Capital: ${country.capital}",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = country.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    if (country.capital.isNotEmpty()) {
+                        Text(
+                            text = "Capital: ${country.capital}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    Text(
+                        text = "Region: ${country.region}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                
-                Text(
-                    text = "Region: ${country.region}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
+            
+            Icon(
+                painter = painterResource(Res.drawable.ic_chevron_right),
+                contentDescription = "View Details"
+            )
         }
     }
 }
@@ -148,7 +170,10 @@ private val sampleCountry = CountryUi(
 @Composable
 fun CountryCardPreview() {
     AppTheme {
-        CountryCard(country = sampleCountry)
+        CountryCard(
+            country = sampleCountry,
+            onClick = {}
+        )
     }
 }
 
@@ -175,7 +200,8 @@ fun CountryListScreenSuccessPreview() {
                 )
             ),
             searchQuery = "",
-            onSearchQueryChange = {}
+            onSearchQueryChange = {},
+            onCountryClick = {}
         )
     }
 }
@@ -187,7 +213,8 @@ fun CountryListScreenLoadingPreview() {
         CountryListScreen(
             state = CountryUiState.Loading,
             searchQuery = "",
-            onSearchQueryChange = {}
+            onSearchQueryChange = {},
+            onCountryClick = {}
         )
     }
 }
@@ -208,7 +235,8 @@ fun CountryListScreenSearchPreview() {
                 )
             ),
             searchQuery = "Europe",
-            onSearchQueryChange = {}
+            onSearchQueryChange = {},
+            onCountryClick = {}
         )
     }
 }
@@ -220,7 +248,8 @@ fun CountryListScreenErrorPreview() {
         CountryListScreen(
             state = CountryUiState.Error("Failed to fetch data"),
             searchQuery = "",
-            onSearchQueryChange = {}
+            onSearchQueryChange = {},
+            onCountryClick = {}
         )
     }
 }

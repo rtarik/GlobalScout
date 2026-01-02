@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,33 +28,46 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun CountryListScreen(
     state: CountryUiState,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (state) {
-        is CountryUiState.Loading -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+    Column(modifier = modifier) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            placeholder = { Text("Search by name, capital or region") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            singleLine = true
+        )
+
+        when (state) {
+            is CountryUiState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        }
-        is CountryUiState.Error -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = state.message,
-                    color = MaterialTheme.colorScheme.error
+            is CountryUiState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = state.message,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+            is CountryUiState.Success -> {
+                CountryList(
+                    countries = state.countries
                 )
             }
-        }
-        is CountryUiState.Success -> {
-            CountryList(
-                countries = state.countries,
-                modifier = modifier
-            )
         }
     }
 }
@@ -159,7 +173,9 @@ fun CountryListScreenSuccessPreview() {
                         flag = "🇯🇵"
                     )
                 )
-            )
+            ),
+            searchQuery = "",
+            onSearchQueryChange = {}
         )
     }
 }
@@ -168,7 +184,32 @@ fun CountryListScreenSuccessPreview() {
 @Composable
 fun CountryListScreenLoadingPreview() {
     AppTheme {
-        CountryListScreen(state = CountryUiState.Loading)
+        CountryListScreen(
+            state = CountryUiState.Loading,
+            searchQuery = "",
+            onSearchQueryChange = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun CountryListScreenSearchPreview() {
+    AppTheme {
+        CountryListScreen(
+            state = CountryUiState.Success(
+                countries = listOf(
+                    sampleCountry.copy(
+                        name = "France",
+                        capital = "Paris",
+                        region = "Europe",
+                        flag = "🇫🇷"
+                    )
+                )
+            ),
+            searchQuery = "Europe",
+            onSearchQueryChange = {}
+        )
     }
 }
 
@@ -176,6 +217,10 @@ fun CountryListScreenLoadingPreview() {
 @Composable
 fun CountryListScreenErrorPreview() {
     AppTheme {
-        CountryListScreen(state = CountryUiState.Error("Failed to fetch data"))
+        CountryListScreen(
+            state = CountryUiState.Error("Failed to fetch data"),
+            searchQuery = "",
+            onSearchQueryChange = {}
+        )
     }
 }

@@ -1,18 +1,7 @@
 package io.github.globalscout.data
 
-import io.github.globalscout.data.network.CountryService
 import io.github.globalscout.domain.Country
-import io.github.globalscout.data.network.Country as NetworkCountry
 
-class CountryRepository(private val service: CountryService) {
-    suspend fun getAllCountries(): List<Country> {
-        return service.fetchAll().map { networkCountry ->
-            Country(
-                name = networkCountry.name.common,
-                capital = networkCountry.capital,
-                region = networkCountry.region,
-                flag = networkCountry.flag
-            )
-        }
-    }
+interface CountryRepository {
+    suspend fun getAllCountries(): List<Country>
 }

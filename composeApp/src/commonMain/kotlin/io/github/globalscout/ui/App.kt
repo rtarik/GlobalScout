@@ -16,6 +16,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App() {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     AppTheme {
         Surface(
@@ -23,6 +24,8 @@ fun App() {
         ) {
             CountryListScreen(
                 state = state,
+                searchQuery = searchQuery,
+                onSearchQueryChange = viewModel::onSearchQueryChange,
                 modifier = Modifier.safeContentPadding()
             )
         }

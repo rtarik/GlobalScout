@@ -16,11 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.globalscout.data.CountryRepository
 import io.github.globalscout.data.network.CountryService
+import io.github.globalscout.ui.HomeViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
 fun App() {
+    val viewModel = koinViewModel<HomeViewModel>()
     MaterialTheme {
         Column(
             modifier = Modifier
@@ -32,8 +35,7 @@ fun App() {
             var text by remember { mutableStateOf("Loading") }
             LaunchedEffect(true) {
                 text = try {
-                    val repository = CountryRepository(CountryService())
-                    repository.getAllCountries().first().toString()
+                    viewModel.getAllCountries().first().toString()
                 } catch (e: Exception) {
                     e.message ?: "error"
                 }
